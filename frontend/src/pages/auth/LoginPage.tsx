@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginPageProps {
   onNavigateRegister: () => void;
-  onSuccess: () => void;
+  onSuccess: (role?: string) => void;
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSuccess }) => {
@@ -20,7 +20,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
     setLoading(true);
     try {
       await login(email, password);
-      onSuccess();
+      const isAdm = email.toLowerCase().includes('admin');
+      const isVen = email.toLowerCase().includes('vendor');
+      onSuccess(isAdm ? 'ADMIN' : isVen ? 'VENDOR' : 'CUSTOMER');
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -33,12 +35,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
     setLoading(true);
     try {
       await quickDemoLogin(role);
-      onSuccess();
+      onSuccess(role.toUpperCase());
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fillCredentials = (demoEmail: string, demoPass: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPass);
   };
 
   return (
@@ -56,32 +63,35 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
       {/* 1-Click Quick Demo Switcher Buttons */}
       <div className="p-4 rounded-2xl glass-panel border border-slate-200 dark:border-slate-800 space-y-2.5">
         <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block text-center">
-          ⚡ 1-Click Quick Demo Sign In
+          ⚡ 1-Click Instant Demo Portals
         </span>
         <div className="grid grid-cols-3 gap-2">
           <button
             type="button"
+            disabled={loading}
             onClick={() => handleDemoLogin('customer')}
-            className="p-2.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800 text-cyan-800 dark:text-cyan-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95"
+            className="p-2.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800 text-cyan-800 dark:text-cyan-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
           >
             <UserIcon className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
             <span>Customer</span>
           </button>
           <button
             type="button"
+            disabled={loading}
             onClick={() => handleDemoLogin('vendor')}
-            className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95"
+            className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
           >
             <Store className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span>Vendor</span>
           </button>
           <button
             type="button"
+            disabled={loading}
             onClick={() => handleDemoLogin('admin')}
-            className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95"
+            className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/50 hover:bg-purple-100 dark:hover:bg-purple-900/60 border border-purple-200 dark:border-purple-800 text-purple-800 dark:text-purple-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50 ring-2 ring-purple-500/20 shadow-md shadow-purple-500/10"
           >
             <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-            <span>Admin</span>
+            <span className="flex items-center gap-1">Admin</span>
           </button>
         </div>
       </div>
@@ -103,8 +113,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="e.g. customer@shopsense.com"
-              className="w-full pl-10 pr-3 py-2.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="e.g. admin@shopsense.com"
+              className="w-full pl-10 pr-3 py-2.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-900 dark:text-white"
             />
           </div>
         </div>
@@ -119,8 +129,36 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-10 pr-3 py-2.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full pl-10 pr-3 py-2.5 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-900 dark:text-white"
             />
+          </div>
+        </div>
+
+        {/* Demo Credentials Auto-Fill Pill Helpers */}
+        <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-800 space-y-1.5 text-[11px]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Click to Autofill Credentials:</span>
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => fillCredentials('admin@shopsense.com', 'ShopSense@123')}
+              className="px-2 py-1 rounded-lg bg-purple-100 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 hover:bg-purple-200 font-medium transition-colors"
+            >
+              👑 Admin (admin@shopsense.com)
+            </button>
+            <button
+              type="button"
+              onClick={() => fillCredentials('vendor@shopsense.com', 'ShopSense@123')}
+              className="px-2 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 font-medium transition-colors"
+            >
+              🏪 Vendor (vendor@shopsense.com)
+            </button>
+            <button
+              type="button"
+              onClick={() => fillCredentials('customer@shopsense.com', 'ShopSense@123')}
+              className="px-2 py-1 rounded-lg bg-cyan-100 dark:bg-cyan-950/70 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-200 font-medium transition-colors"
+            >
+              🛒 Customer (customer@shopsense.com)
+            </button>
           </div>
         </div>
 

@@ -164,6 +164,36 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   )}
 
                   <div className="border-t border-slate-200 dark:border-slate-800 my-1" />
+                  
+                  <p className="px-4 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Switch Demo Role
+                  </p>
+                  {!isAdmin && (
+                    <button
+                      onClick={async () => {
+                        await quickDemoLogin('admin');
+                        onNavigate('/admin/dashboard');
+                      }}
+                      className="w-full text-left px-4 py-1.5 text-xs text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 flex items-center space-x-2 font-medium"
+                    >
+                      <Shield className="w-3.5 h-3.5" />
+                      <span>Switch to Admin Demo</span>
+                    </button>
+                  )}
+                  {!isVendor && (
+                    <button
+                      onClick={async () => {
+                        await quickDemoLogin('vendor');
+                        onNavigate('/vendor/dashboard');
+                      }}
+                      className="w-full text-left px-4 py-1.5 text-xs text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 flex items-center space-x-2 font-medium"
+                    >
+                      <LayoutDashboard className="w-3.5 h-3.5" />
+                      <span>Switch to Vendor Demo</span>
+                    </button>
+                  )}
+
+                  <div className="border-t border-slate-200 dark:border-slate-800 my-1" />
 
                   <button
                     onClick={logout}
@@ -204,22 +234,31 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       Instant Demo Switcher
                     </p>
                     <button
-                      onClick={() => quickDemoLogin('customer')}
+                      onClick={async () => {
+                        await quickDemoLogin('customer');
+                        onNavigate('/');
+                      }}
                       className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2 text-slate-800 dark:text-slate-200"
                     >
                       <UserIcon className="w-3.5 h-3.5 text-cyan-500" />
                       <span>Customer (Aditi)</span>
                     </button>
                     <button
-                      onClick={() => quickDemoLogin('vendor')}
+                      onClick={async () => {
+                        await quickDemoLogin('vendor');
+                        onNavigate('/vendor/dashboard');
+                      }}
                       className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2 text-slate-800 dark:text-slate-200"
                     >
                       <LayoutDashboard className="w-3.5 h-3.5 text-indigo-500" />
                       <span>Vendor (Nexus Tech)</span>
                     </button>
                     <button
-                      onClick={() => quickDemoLogin('admin')}
-                      className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2 text-slate-800 dark:text-slate-200"
+                      onClick={async () => {
+                        await quickDemoLogin('admin');
+                        onNavigate('/admin/dashboard');
+                      }}
+                      className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2 text-slate-800 dark:text-slate-200 font-semibold text-purple-600 dark:text-purple-400"
                     >
                       <Shield className="w-3.5 h-3.5 text-purple-500" />
                       <span>Admin (Platform)</span>

@@ -98,7 +98,12 @@ const MainApp: React.FC = () => {
       </p>
       <div className="pt-2 flex justify-center space-x-3">
         <button
-          onClick={() => quickDemoLogin(demoTarget)}
+          onClick={async () => {
+            await quickDemoLogin(demoTarget);
+            if (demoTarget === 'admin') navigate('/admin/dashboard');
+            else if (demoTarget === 'vendor') navigate('/vendor/dashboard');
+            else navigate('/');
+          }}
           className="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-md shadow-brand-500/20"
         >
           Quick Login as {requiredRole}
@@ -120,7 +125,15 @@ const MainApp: React.FC = () => {
       return (
         <LoginPage
           onNavigateRegister={() => navigate('/register')}
-          onSuccess={() => navigate('/')}
+          onSuccess={(role?: string) => {
+            if (role === 'ADMIN') {
+              navigate('/admin/dashboard');
+            } else if (role === 'VENDOR') {
+              navigate('/vendor/dashboard');
+            } else {
+              navigate('/');
+            }
+          }}
         />
       );
     }

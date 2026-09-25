@@ -83,9 +83,10 @@ def run_all_tests():
             assert "access_token" in res.json()
             assert res.json()["user"]["role"] == role.upper()
 
-        # Admin demo login is strictly blocked by default (Requirement 8)
+        # Admin demo login is enabled for demo access
         res_admin_demo = client.post("/api/auth/quick-demo-login?role=admin")
-        assert res_admin_demo.status_code == 403, "Public admin demo login must be blocked"
+        assert res_admin_demo.status_code == 200, "Admin demo login must succeed"
+        assert res_admin_demo.json()["user"]["role"] == "ADMIN"
 
         # Authorized Admin logs in via credentials (Requirement 9)
         res_admin = client.post("/api/auth/login", json={

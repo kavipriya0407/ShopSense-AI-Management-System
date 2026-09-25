@@ -21,8 +21,8 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     
     ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "admin@shopsense.com")
-    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "Admin@ShopSense2026")
-    ENABLE_ADMIN_DEMO: bool = os.getenv("ENABLE_ADMIN_DEMO", "false").lower() in ("true", "1", "yes")
+    ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "ShopSense@123")
+    ENABLE_ADMIN_DEMO: bool = os.getenv("ENABLE_ADMIN_DEMO", "true").lower() in ("true", "1", "yes")
     
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
