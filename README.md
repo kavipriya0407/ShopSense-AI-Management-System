@@ -12,6 +12,8 @@
 
 ---
 
+LIVE WEBSITE URL: https://shopsense-ai-management-platform.vercel.app/
+
 ## 🌟 Platform Highlights
 
 ShopSense is built as a complete, working, production-style web platform combining high-performance e-commerce with analytics and machine learning:
