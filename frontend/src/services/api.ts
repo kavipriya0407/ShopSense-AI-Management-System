@@ -1,5 +1,11 @@
-const rawBase = import.meta.env.VITE_API_URL || "https://shopsense-ai-management-system.onrender.com";;
-export const API_BASE_URL = rawBase.endsWith('/api') ? rawBase : `${rawBase.replace(/\/+$/, '')}/api`;
+const rawBase =
+  import.meta.env.VITE_API_URL ||
+  "https://shopsense-ai-management-system.onrender.com";
+
+export const API_BASE_URL =
+  rawBase.endsWith('/api')
+    ? rawBase
+    : `${rawBase.replace(/\/+$/, '')}/api`;
 
 export function getAuthToken(): string | null {
   return localStorage.getItem('shopsense_token');
