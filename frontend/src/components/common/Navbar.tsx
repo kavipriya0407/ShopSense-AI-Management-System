@@ -18,6 +18,36 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [demoMenuOpen, setDemoMenuOpen] = useState(false);
 
+  const getDisplayName = (u: any) => {
+    if (!u) return '';
+    if (
+      u.email === 'customer@shopsense.com' ||
+      u.full_name === 'Aditi Sharma' ||
+      u.full_name === 'Priya' ||
+      u.full_name === 'PRIYA' ||
+      (u.role === 'CUSTOMER' && (
+        u.full_name?.toLowerCase().includes('aditi') ||
+        u.full_name?.toLowerCase().includes('priya')
+      ))
+    ) {
+      return 'PRIYA';
+    }
+    if (
+      u.email === 'vendor@shopsense.com' ||
+      u.full_name === 'Vikram Patel' ||
+      u.full_name === 'Kavi' ||
+      u.full_name === 'KAVI' ||
+      (u.role === 'VENDOR' && (
+        u.full_name?.toLowerCase().includes('vikram') ||
+        u.full_name?.toLowerCase().includes('kavi')
+      ))
+    ) {
+      return 'KAVI';
+    }
+    return u.full_name;
+  };
+  const displayName = getDisplayName(user);
+
   const navLinks = [
     { name: 'Store', path: '/' },
     { name: 'Catalog', path: '/products' },
@@ -53,7 +83,8 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
           {/* Desktop Navigation Links */}
           <nav className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => {
-              const isActive = currentPath === link.path;
+              const currentPathname = currentPath.split('?')[0];
+              const isActive = currentPathname === link.path || (link.path !== '/' && currentPathname.startsWith(link.path));
               return (
                 <button
                   key={link.path}
@@ -114,10 +145,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                 className="flex items-center space-x-2 p-1.5 pl-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-800"
               >
                 <div className="w-7 h-7 rounded-lg bg-brand-500 text-white flex items-center justify-center font-bold text-xs">
-                  {user.full_name?.charAt(0) || 'U'}
+                  {displayName.charAt(0) || 'U'}
                 </div>
                 <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 hidden md:block max-w-[100px] truncate">
-                  {user.full_name}
+                  {displayName}
                 </span>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
               </button>
@@ -128,7 +159,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                   onClick={() => setUserMenuOpen(false)}
                 >
                   <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-800">
-                    <p className="font-semibold text-slate-900 dark:text-white">{user.full_name}</p>
+                    <p className="font-semibold text-slate-900 dark:text-white">{displayName}</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
                     <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-brand-100 dark:bg-brand-950 text-brand-700 dark:text-brand-300">
                       {user.role}
@@ -241,7 +272,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2 text-slate-800 dark:text-slate-200"
                     >
                       <UserIcon className="w-3.5 h-3.5 text-cyan-500" />
-                      <span>Customer (Aditi)</span>
+                      <span>Customer (PRIYA)</span>
                     </button>
                     <button
                       onClick={async () => {
@@ -251,7 +282,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate }) => {
                       className="w-full text-left px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center space-x-2 text-slate-800 dark:text-slate-200"
                     >
                       <LayoutDashboard className="w-3.5 h-3.5 text-indigo-500" />
-                      <span>Vendor (Nexus Tech)</span>
+                      <span>Vendor (KAVI)</span>
                     </button>
                     <button
                       onClick={async () => {

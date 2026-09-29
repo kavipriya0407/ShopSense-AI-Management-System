@@ -93,6 +93,15 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is deactivated")
 
+    if user.email == "customer@shopsense.com" and user.full_name != "PRIYA":
+        user.full_name = "PRIYA"
+        db.commit()
+        db.refresh(user)
+    elif user.email == "vendor@shopsense.com" and user.full_name != "KAVI":
+        user.full_name = "KAVI"
+        db.commit()
+        db.refresh(user)
+
     vendor_id = user.vendor_profile.id if user.vendor_profile else None
     token = create_access_token({"sub": str(user.id), "role": user.role.value})
     return {
@@ -156,8 +165,73 @@ async def quick_demo_login(
             db.refresh(user)
     elif target_role == "VENDOR":
         user = db.query(User).filter(User.email == "vendor@shopsense.com").first()
+        if not user:
+            user = db.query(User).filter(User.role == UserRole.VENDOR).first()
+        if not user:
+            user = User(
+                email="vendor@shopsense.com",
+                hashed_password=hash_password("ShopSense@123"),
+                full_name="KAVI",
+                role=UserRole.VENDOR,
+                avatar_url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&fit=crop&q=80",
+                is_active=True
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            vendor_rec = Vendor(
+                user_id=user.id,
+                store_name="Kavi Tech Hub",
+                slug=f"kavi-tech-hub-{user.id}",
+                description="Official authorized store managed by KAVI.",
+                rating=4.9,
+                commission_rate=0.10,
+                is_verified=True
+            )
+            db.add(vendor_rec)
+            db.commit()
+            db.refresh(user)
+        else:
+            changed = False
+            if user.full_name != "KAVI":
+                user.full_name = "KAVI"
+                changed = True
+            if not user.vendor_profile:
+                vendor_rec = Vendor(
+                    user_id=user.id,
+                    store_name="Kavi Tech Hub",
+                    slug=f"kavi-tech-hub-{user.id}",
+                    description="Official authorized store managed by KAVI.",
+                    rating=4.9,
+                    commission_rate=0.10,
+                    is_verified=True
+                )
+                db.add(vendor_rec)
+                changed = True
+            if changed:
+                db.commit()
+                db.refresh(user)
+
     elif target_role == "CUSTOMER":
         user = db.query(User).filter(User.email == "customer@shopsense.com").first()
+        if not user:
+            user = db.query(User).filter(User.role == UserRole.CUSTOMER).first()
+        if not user:
+            user = User(
+                email="customer@shopsense.com",
+                hashed_password=hash_password("ShopSense@123"),
+                full_name="PRIYA",
+                role=UserRole.CUSTOMER,
+                avatar_url="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&fit=crop&q=80",
+                is_active=True
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+        elif user.full_name != "PRIYA":
+            user.full_name = "PRIYA"
+            db.commit()
+            db.refresh(user)
     else:
         user = None
 

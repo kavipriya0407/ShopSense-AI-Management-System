@@ -43,7 +43,7 @@ export const VendorProfilePage: React.FC = () => {
           <div>
             <div className="flex items-center justify-center sm:justify-start space-x-2">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                {vendor?.store_name || 'Nexus Tech Hub'}
+                {vendor?.store_name || 'Kavi Tech Hub'}
               </h2>
               {vendor?.is_verified && (
                 <span className="inline-flex items-center text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded-full">
@@ -78,7 +78,7 @@ export const VendorProfilePage: React.FC = () => {
           <div className="p-4 rounded-2xl glass-card space-y-1">
             <span className="text-slate-400 font-semibold">Account Manager</span>
             <p className="text-base font-extrabold text-slate-900 dark:text-white">
-              {user?.full_name || 'Vikram Patel'}
+              {user?.full_name || 'KAVI'}
             </p>
           </div>
           <div className="p-4 rounded-2xl glass-card space-y-1">

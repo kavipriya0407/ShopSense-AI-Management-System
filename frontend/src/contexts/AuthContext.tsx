@@ -18,6 +18,36 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const normalizeUser = (u: User | null): User | null => {
+  if (!u) return null;
+  const clone = { ...u };
+  if (
+    clone.email === 'customer@shopsense.com' ||
+    clone.full_name === 'Aditi Sharma' ||
+    clone.full_name === 'Priya' ||
+    clone.full_name === 'PRIYA' ||
+    (clone.role === 'CUSTOMER' && (
+      clone.full_name?.toLowerCase().includes('aditi') ||
+      clone.full_name?.toLowerCase().includes('priya')
+    ))
+  ) {
+    clone.full_name = 'PRIYA';
+  }
+  if (
+    clone.email === 'vendor@shopsense.com' ||
+    clone.full_name === 'Vikram Patel' ||
+    clone.full_name === 'Kavi' ||
+    clone.full_name === 'KAVI' ||
+    (clone.role === 'VENDOR' && (
+      clone.full_name?.toLowerCase().includes('vikram') ||
+      clone.full_name?.toLowerCase().includes('kavi')
+    ))
+  ) {
+    clone.full_name = 'KAVI';
+  }
+  return clone;
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       try {
         const userData = await api.getMe();
-        setUser(userData);
+        setUser(normalizeUser(userData));
       } catch (err) {
         removeAuthToken();
         setUser(null);
@@ -47,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await api.login({ email, password });
       setAuthToken(res.access_token);
-      setUser(res.user);
+      setUser(normalizeUser(res.user));
     } finally {
       setLoading(false);
     }
@@ -58,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await api.register(data);
       setAuthToken(res.access_token);
-      setUser(res.user);
+      setUser(normalizeUser(res.user));
     } finally {
       setLoading(false);
     }
@@ -69,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const res = await api.quickDemoLogin(targetRole);
       setAuthToken(res.access_token);
-      setUser(res.user);
+      setUser(normalizeUser(res.user));
     } finally {
       setLoading(false);
     }

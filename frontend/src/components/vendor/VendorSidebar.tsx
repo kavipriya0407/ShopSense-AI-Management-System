@@ -37,7 +37,7 @@ export const VendorSidebar: React.FC<VendorSidebarProps> = ({ currentPath, onNav
             Vendor Control Center
           </span>
           <p className="text-xs font-semibold text-slate-700 dark:text-slate-300 truncate">
-            {user?.full_name || 'Vendor Admin'}
+            {(user?.email === 'vendor@shopsense.com' || user?.full_name === 'Vikram Patel' || user?.full_name === 'Kavi' || user?.full_name === 'KAVI') ? 'KAVI' : (user?.full_name || 'KAVI')}
           </p>
         </div>
 

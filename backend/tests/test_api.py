@@ -74,6 +74,66 @@ def test_quick_demo_login():
         data = response.json()
         assert "access_token" in data
         assert data["user"]["role"] == role.upper()
+        if role == "customer":
+            assert data["user"]["full_name"] == "PRIYA"
+        elif role == "vendor":
+            assert data["user"]["full_name"] == "KAVI"
+        elif role == "admin":
+            assert data["user"]["role"] == "ADMIN"
+
+def test_laptops_and_category_search():
+    # 1. Search 'Laptops' (plural)
+    res_laptops = client.get("/api/products?search=Laptops")
+    assert res_laptops.status_code == 200
+    data_laptops = res_laptops.json()
+    assert len(data_laptops["items"]) > 0
+    # Verify product properties
+    first_item = data_laptops["items"][0]
+    assert "name" in first_item and first_item["name"]
+    assert "price" in first_item and first_item["price"] > 0
+    assert "image_url" in first_item and first_item["image_url"]
+    assert "vendor_name" in first_item and first_item["vendor_name"]
+    assert "category_name" in first_item and first_item["category_name"]
+
+    # 2. Case insensitivity ('laptops' vs 'Laptops')
+    res_lower = client.get("/api/products?search=laptops")
+    assert res_lower.status_code == 200
+    assert res_lower.json()["total"] == data_laptops["total"]
+
+    # 3. Singular term ('Laptop')
+    res_singular = client.get("/api/products?search=Laptop")
+    assert res_singular.status_code == 200
+    assert res_singular.json()["total"] == data_laptops["total"]
+
+    # 4. Other categories and products
+    for query in ["Audio", "Headphones", "Gaming", "Cameras"]:
+        res_cat = client.get(f"/api/products?search={query}")
+        assert res_cat.status_code == 200
+        assert len(res_cat.json()["items"]) > 0
+
+    # 5. Non-existent product search
+    res_empty = client.get("/api/products?search=NonExistentProductXYZ123")
+    assert res_empty.status_code == 200
+    assert res_empty.json()["total"] == 0
+    assert res_empty.json()["items"] == []
+
+def test_credential_login_demo_names():
+    # Customer credential login
+    res_cust = client.post("/api/auth/login", json={"email": "customer@shopsense.com", "password": "ShopSense@123"})
+    assert res_cust.status_code == 200
+    assert res_cust.json()["user"]["full_name"] == "PRIYA"
+    assert res_cust.json()["user"]["role"] == "CUSTOMER"
+
+    # Vendor credential login
+    res_vend = client.post("/api/auth/login", json={"email": "vendor@shopsense.com", "password": "ShopSense@123"})
+    assert res_vend.status_code == 200
+    assert res_vend.json()["user"]["full_name"] == "KAVI"
+    assert res_vend.json()["user"]["role"] == "VENDOR"
+
+    # Admin credential login (remains unchanged)
+    res_admin = client.post("/api/auth/login", json={"email": "admin@shopsense.com", "password": "ShopSense@123"})
+    assert res_admin.status_code == 200
+    assert res_admin.json()["user"]["role"] == "ADMIN"
 
 def test_system_health():
     response = client.get("/api/system/health")
@@ -83,3 +143,4 @@ def test_system_health():
     assert data["database"]["status"] == "HEALTHY"
     assert data["metrics"]["total_products"] >= 100
     assert data["metrics"]["total_orders"] >= 500
+

@@ -23,6 +23,22 @@ async def lifespan(app: FastAPI):
         seed_admin()
     except Exception as e:
         print(f"Warning: automatic admin seed failed: {e}")
+    # Ensure demo user names (PRIYA & KAVI) are synchronized on startup
+    try:
+        from app.database.session import SessionLocal
+        from app.models.models import User
+        db_sync = SessionLocal()
+        cust = db_sync.query(User).filter(User.email == "customer@shopsense.com").first()
+        if cust and cust.full_name != "PRIYA":
+            cust.full_name = "PRIYA"
+            db_sync.commit()
+        vend = db_sync.query(User).filter(User.email == "vendor@shopsense.com").first()
+        if vend and vend.full_name != "KAVI":
+            vend.full_name = "KAVI"
+            db_sync.commit()
+        db_sync.close()
+    except Exception as e:
+        print(f"Warning: demo user sync failed: {e}")
     yield
 
 app = FastAPI(

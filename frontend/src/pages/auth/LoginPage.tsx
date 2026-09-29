@@ -73,7 +73,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
             className="p-2.5 rounded-xl bg-cyan-50 dark:bg-cyan-950/50 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800 text-cyan-800 dark:text-cyan-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
           >
             <UserIcon className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-            <span>Customer</span>
+            <span>Customer (PRIYA)</span>
           </button>
           <button
             type="button"
@@ -82,7 +82,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
             className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800 text-indigo-800 dark:text-indigo-200 text-xs font-bold flex flex-col items-center gap-1 transition-all active:scale-95 disabled:opacity-50"
           >
             <Store className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-            <span>Vendor</span>
+            <span>Vendor (KAVI)</span>
           </button>
           <button
             type="button"
@@ -150,14 +150,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigateRegister, onSucc
               onClick={() => fillCredentials('vendor@shopsense.com', 'ShopSense@123')}
               className="px-2 py-1 rounded-lg bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 font-medium transition-colors"
             >
-              🏪 Vendor (vendor@shopsense.com)
+              🏪 Vendor: KAVI (vendor@shopsense.com)
             </button>
             <button
               type="button"
               onClick={() => fillCredentials('customer@shopsense.com', 'ShopSense@123')}
               className="px-2 py-1 rounded-lg bg-cyan-100 dark:bg-cyan-950/70 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-200 font-medium transition-colors"
             >
-              🛒 Customer (customer@shopsense.com)
+              🛒 Customer: PRIYA (customer@shopsense.com)
             </button>
           </div>
         </div>

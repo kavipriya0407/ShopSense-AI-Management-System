@@ -13,7 +13,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigateOrders, on
   const { items, subtotal, tax, total, clearCart } = useCart();
   const { user, isAuthenticated } = useAuth();
 
-  const [fullName, setFullName] = useState(user?.full_name || 'Aditi Sharma');
+  const [fullName, setFullName] = useState(user?.full_name || 'PRIYA');
   const [phone, setPhone] = useState('9876543210');
   const [address, setAddress] = useState('Flat 402, Skyline Towers, Indiranagar');
   const [city, setCity] = useState('Bengaluru');

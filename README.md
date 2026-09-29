@@ -63,8 +63,8 @@ The database is seeded with realistic test data across 108 products, 11 vendors,
 | Role | Email | Password | Access Area |
 | :--- | :--- | :--- | :--- |
 | **Administrator** | `admin@shopsense.com` | `ShopSense@123` | `/admin/dashboard` |
-| **Vendor** | `vendor@shopsense.com` | `ShopSense@123` | `/vendor/dashboard` |
-| **Customer** | `customer@shopsense.com` | `ShopSense@123` | `/` (Storefront) |
+| **Vendor (KAVI)** | `vendor@shopsense.com` | `ShopSense@123` | `/vendor/dashboard` |
+| **Customer (PRIYA)** | `customer@shopsense.com` | `ShopSense@123` | `/` (Storefront) |
 
 > 💡 **Quick Login**: The Login screen features 1-click demo switcher buttons for instant access without manual typing.
 

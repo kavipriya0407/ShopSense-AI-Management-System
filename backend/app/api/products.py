@@ -57,10 +57,40 @@ def list_products(
     page_size: int = Query(12, ge=1, le=100)
 ):
     query = db.query(Product).filter(Product.is_active == True)
+    query = query.outerjoin(Category, Product.category_id == Category.id)
+    query = query.outerjoin(Vendor, Product.vendor_id == Vendor.id)
 
-    if search:
-        s = f"%{search}%"
-        query = query.filter(or_(Product.name.ilike(s), Product.description.ilike(s), Product.tags.ilike(s)))
+    if search and search.strip():
+        raw = search.strip()
+        variations = {raw}
+        # Stemming and singular / plural variants (e.g. Laptops -> Laptop, Headphones -> Headphone)
+        if raw.lower().endswith('ies') and len(raw) > 4:
+            variations.add(raw[:-3] + 'y')
+        elif raw.lower().endswith('es') and len(raw) > 4:
+            variations.add(raw[:-2])
+        elif raw.lower().endswith('s') and len(raw) > 3:
+            variations.add(raw[:-1])
+        else:
+            variations.add(raw + 's')
+
+        words = [w for w in raw.split() if len(w) > 2]
+        all_terms = variations.union(words)
+
+        conditions = []
+        for term in all_terms:
+            pattern = f"%{term}%"
+            conditions.append(Product.name.ilike(pattern))
+            conditions.append(Product.description.ilike(pattern))
+            conditions.append(Product.tags.ilike(pattern))
+            conditions.append(Product.sku.ilike(pattern))
+            conditions.append(Product.ai_description.ilike(pattern))
+            conditions.append(Product.seo_keywords.ilike(pattern))
+            conditions.append(Category.name.ilike(pattern))
+            conditions.append(Category.description.ilike(pattern))
+            conditions.append(Category.slug.ilike(pattern))
+            conditions.append(Vendor.store_name.ilike(pattern))
+
+        query = query.filter(or_(*conditions))
     if category_id:
         query = query.filter(Product.category_id == category_id)
     if vendor_id:

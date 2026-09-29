@@ -51,15 +51,21 @@ import { Sparkles, ShieldAlert, ArrowRight } from 'lucide-react';
 
 const MainApp: React.FC = () => {
   const { isAuthenticated, isVendor, isAdmin, quickDemoLogin } = useAuth();
-  const [currentPath, setCurrentPath] = useState<string>('/');
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const full = window.location.pathname + window.location.search;
+      return full || '/';
+    }
+    return '/';
+  });
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   // Sync with browser history API
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname;
-      setCurrentPath(path || '/');
+      const full = window.location.pathname + window.location.search;
+      setCurrentPath(full || '/');
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
@@ -67,6 +73,13 @@ const MainApp: React.FC = () => {
 
   const navigate = (path: string) => {
     setCurrentPath(path);
+    if (typeof window !== 'undefined') {
+      try {
+        window.history.pushState(null, '', path);
+      } catch (err) {
+        // Fallback for non-standard environments
+      }
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -81,8 +94,9 @@ const MainApp: React.FC = () => {
   };
 
   // Determine Layout Structure
-  const isVendorRoute = currentPath.startsWith('/vendor');
-  const isAdminRoute = currentPath.startsWith('/admin');
+  const [activePathname] = currentPath.split('?');
+  const isVendorRoute = activePathname.startsWith('/vendor');
+  const isAdminRoute = activePathname.startsWith('/admin');
 
   // RBAC Permission Guard
   const renderPermissionDenied = (requiredRole: string, demoTarget: string) => (
@@ -120,8 +134,13 @@ const MainApp: React.FC = () => {
 
   // Render Page Content
   const renderContent = () => {
+    const [pathname, searchStr] = currentPath.split('?');
+    const queryParams = new URLSearchParams(searchStr || '');
+    const searchParam = queryParams.get('search') || '';
+    const categoryParam = queryParams.get('category');
+
     // Auth Routes
-    if (currentPath === '/login') {
+    if (pathname === '/login') {
       return (
         <LoginPage
           onNavigateRegister={() => navigate('/register')}
@@ -137,7 +156,7 @@ const MainApp: React.FC = () => {
         />
       );
     }
-    if (currentPath === '/register') {
+    if (pathname === '/register') {
       return (
         <RegisterPage
           onNavigateLogin={() => navigate('/login')}
@@ -147,7 +166,7 @@ const MainApp: React.FC = () => {
     }
 
     // Milestones
-    if (currentPath === '/milestones') {
+    if (pathname === '/milestones') {
       return <MilestonesPage />;
     }
 
@@ -156,7 +175,7 @@ const MainApp: React.FC = () => {
       if (!isVendor && !isAdmin) {
         return renderPermissionDenied('Vendor', 'vendor');
       }
-      switch (currentPath) {
+      switch (pathname) {
         case '/vendor/dashboard':
           return <VendorDashboardPage onNavigate={navigate} />;
         case '/vendor/products':
@@ -191,7 +210,7 @@ const MainApp: React.FC = () => {
       if (!isAdmin) {
         return renderPermissionDenied('Administrator', 'admin');
       }
-      switch (currentPath) {
+      switch (pathname) {
         case '/admin/dashboard':
           return <AdminDashboardPage onNavigate={navigate} />;
         case '/admin/vendors':
@@ -212,27 +231,30 @@ const MainApp: React.FC = () => {
     }
 
     // Customer Routes
-    if (currentPath.startsWith('/products/') && selectedProductId) {
+    const productDetailMatch = pathname.match(/^\/products\/(\d+)$/);
+    const prodId = selectedProductId || (productDetailMatch ? Number(productDetailMatch[1]) : null);
+    if (prodId && pathname.startsWith('/products/')) {
       return (
         <ProductDetailPage
-          productId={selectedProductId}
+          productId={prodId}
           onBack={() => navigate('/products')}
           onSelectProduct={handleSelectProduct}
         />
       );
     }
-    if (currentPath === '/products') {
+    if (pathname === '/products' || pathname === '/explore') {
       return (
         <ProductsPage
-          initialCategory={selectedCategoryId || undefined}
+          initialSearch={searchParam || undefined}
+          initialCategory={categoryParam ? Number(categoryParam) : (selectedCategoryId || undefined)}
           onSelectProduct={handleSelectProduct}
         />
       );
     }
-    if (currentPath === '/categories') {
+    if (pathname === '/categories') {
       return <CategoriesPage onSelectCategory={handleSelectCategory} />;
     }
-    if (currentPath === '/checkout') {
+    if (pathname === '/checkout') {
       return (
         <CheckoutPage
           onNavigateOrders={() => navigate('/orders')}
@@ -240,13 +262,13 @@ const MainApp: React.FC = () => {
         />
       );
     }
-    if (currentPath === '/orders') {
+    if (pathname === '/orders') {
       return <OrdersPage onNavigateStore={() => navigate('/products')} />;
     }
-    if (currentPath === '/recommendations') {
+    if (pathname === '/recommendations') {
       return <RecommendationsPage onSelectProduct={handleSelectProduct} />;
     }
-    if (currentPath === '/assistant') {
+    if (pathname === '/assistant') {
       return <ShoppingAssistantPage onSelectProduct={handleSelectProduct} />;
     }
 

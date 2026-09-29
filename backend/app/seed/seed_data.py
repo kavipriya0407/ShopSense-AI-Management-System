@@ -76,9 +76,9 @@ CATEGORIES_DATA = [
 
 VENDORS_DATA = [
     {
-        "name": "Nexus Tech Hub",
+        "name": "Kavi Tech Hub",
         "email": "vendor@shopsense.com", # Primary demo vendor
-        "full_name": "Vikram Patel",
+        "full_name": "KAVI",
         "desc": "Official authorized flagship distributor for next-gen consumer technology.",
         "rating": 4.9,
         "commission": 0.10
@@ -86,7 +86,7 @@ VENDORS_DATA = [
     {
         "name": "Apex Audio Labs",
         "email": "vendor2@shopsense.com",
-        "full_name": "Priya Sen",
+        "full_name": "Preeti Sen",
         "desc": "Audiophile grade personal sound systems and acoustic accessories.",
         "rating": 4.8,
         "commission": 0.10
@@ -297,6 +297,9 @@ def seed_database():
                 db.add(v_user)
                 db.commit()
                 db.refresh(v_user)
+            else:
+                v_user.full_name = v_info["full_name"]
+                db.commit()
 
             vendor_rec = db.query(Vendor).filter(Vendor.user_id == v_user.id).first()
             if not vendor_rec:
@@ -325,7 +328,7 @@ def seed_database():
             demo_cust_user = User(
                 email="customer@shopsense.com",
                 hashed_password=hash_password(DEMO_PASSWORD),
-                full_name="Aditi Sharma",
+                full_name="PRIYA",
                 role=UserRole.CUSTOMER,
                 avatar_url="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&fit=crop&q=80",
                 is_active=True
@@ -333,6 +336,9 @@ def seed_database():
             db.add(demo_cust_user)
             db.commit()
             db.refresh(demo_cust_user)
+        else:
+            demo_cust_user.full_name = "PRIYA"
+            db.commit()
 
         demo_cust = db.query(Customer).filter(Customer.user_id == demo_cust_user.id).first()
         if not demo_cust:
